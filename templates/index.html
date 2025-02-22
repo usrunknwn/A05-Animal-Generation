@@ -45,16 +45,19 @@
     <div id="animal-container">
         {% for i in range(4) %}
         <div class="animal-item">
-            <img class="animal-image" src="{{ image_urls[i] }}" alt="Animal Image">
+            <!-- Updated image source -->
+            <img class="animal-image" src="images/{{ image_urls[i] }}" alt="Animal Image"> 
             <div class="animal-text">
                 <p>{{ animal_phrases[i] }}</p>
             </div>
-            <audio controls autoplay> <source src="{{ audio_file }}" type="audio/wav">Your browser does not support the audio element.</audio>
+            <!-- Updated audio source -->
+            <audio controls autoplay> <source src="sounds/{{ audio_file }}" type="audio/wav">Your browser does not support the audio element.</audio> 
         </div>
         {% endfor %}
     </div>
 
-    <p id="fictional-text">{{ result }}</p>  </body>
+    <p id="fictional-text">{{ result }}</p>  
+</body>
 <script>
     // JavaScript code to change images every 3 seconds
 
