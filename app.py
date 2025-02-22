@@ -3,7 +3,6 @@ import openai
 import os
 from dotenv import load_dotenv
 import random
-from IPython.display import Audio  # For playing audio in Colab
 
 # Load API key from .env file
 load_dotenv()
@@ -11,43 +10,42 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 app = Flask(__name__)
 
-# List of image paths (replace with your actual paths)
-image_paths = ["images/animal_00.png", "images/animal_01.png", "images/animal_02.png", "images/animal_03.png"]
-# List of audio paths
-audio_paths = ["audio1.mp3", "audio2.wav", "audio3.ogg", "audio4.flac"]  # Replace with your audio file paths
-
+# List of animal data
+animals = [
+    {"name": "Lion", "image": "images/lion.png", "sound": "sounds/lion.mp3", "id": "lion"},
+    {"name": "Elephant", "image": "images/elephant.png", "sound": "sounds/elephant.mp3", "id": "elephant"},
+    {"name": "Wolf", "image": "images/wolf.png", "sound": "sounds/wolf.mp3", "id": "wolf"},
+    {"name": "Eagle", "image": "images/eagle.png", "sound": "sounds/eagle.mp3", "id": "eagle"}
+]
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     result = None
-    selected_image = None
-    animal_phrases = []
-    audio_file = None
+    selected_animal = None
 
     if request.method == "POST":
-        prompt = request.form["prompt"]  # Not using the prompt for image selection in this version
+        prompt = request.form["prompt"]
+        
         try:
-            # Generate animal phrases with GPT
+            # Generate animal-related text
             response = openai.chat.completions.create(
-              model="gpt-3.5-turbo",  # Or any suitable model
-              messages=[
-                  {"role": "system", "content": "You are a creative writer. Generate short, fictional phrases in an animal language. Each phrase should be unique and evocative."},
-                  {"role": "user", "content": f"Generate 16 phrases in an animal language based on: {prompt}"}
-              ],
-              temperature=0.7,
-              max_tokens=500
+                model="gpt-4o",
+                messages=[
+                    {"role": "system", "content": "You are an animal expert providing fun facts and descriptions."},
+                    {"role": "user", "content": f"Tell me about {prompt}"}
+                ],
+                temperature=0.7,
+                max_tokens=300
             )
-            animal_phrases = response.choices[0].message.content.split('\n')
-            animal_phrases = [phrase.strip() for phrase in animal_phrases if phrase.strip()]  # Clean up extra whitespace and empty lines
+            result = response.choices[0].message.content
 
-            # Randomly select an image and audio file
-            selected_image = random.choice(image_paths)
-            audio_file = random.choice(audio_paths) # Select a random audio file
-
+            # Randomly select an animal
+            selected_animal = random.choice(animals)
+        
         except Exception as e:
             result = f"Error: {str(e)}"
 
-    return render_template("index.html", result=result, image_url=selected_image, animal_phrases=animal_phrases, audio_file=audio_file)
+    return render_template("index.html", result=result, animal=selected_animal, animals=animals)
 
 if __name__ == "__main__":
     app.run(debug=True)
